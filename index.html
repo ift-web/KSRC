@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSRC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ivory: #F4F0E8;
+  --ivory-2: #E8E2D6;
+  --ivory-3: #D6CEBC;
+  --ink: #0C0C0A;
+  --ink-2: #3A3A35;
+  --ink-3: #7A7870;
+  --gold: #B8925A;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  cursor: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow-x: hidden;
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  width: 8px; height: 8px;
+  background: var(--ink);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+  mix-blend-mode: multiply;
+}
+#cursor.big {
+  width: 48px; height: 48px;
+  background: var(--gold);
+  mix-blend-mode: multiply;
+}
+
+/* ── NOISE ── */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9998;
+}
+
+img { pointer-events:none; user-select:none; -webkit-user-drag:none; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display: flex; justify-content:space-between; align-items:center;
+  padding: 22px 40px;
+  mix-blend-mode: multiply;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; font-weight:900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.nav-r {
+  display:flex; gap:36px; align-items:center;
+}
+
+.nav-r a {
+  text-decoration:none;
+  color: var(--ink-3);
+  font-size:9px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  transition: color 0.2s;
+}
+.nav-r a:hover { color:var(--ink); }
+
+/* ── HERO ── */
+.hero {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-text {
+  position: absolute;
+  bottom: -0.12em;
+  left: -0.02em;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(140px, 20vw, 260px);
+  font-weight: 900;
+  font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--ivory-3);
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  animation: fadeIn 1.2s ease forwards 0.2s;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-left {
+  padding: 140px 40px 60px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  border-right: 1px solid var(--ivory-3);
+}
+
+.hero-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  opacity:0;
+  animation: fadeUp 0.8s ease forwards 0.6s;
+}
+
+.hero-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+  opacity:0;
+  animation: fadeUp 1s ease forwards 0.8s;
+}
+
+.hero-headline em {
+  font-style: italic;
+  font-weight: 400;
+  display:block;
+  color: var(--ink-2);
+}
+
+.hero-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--ink-3);
+  line-height: 1.5;
+  max-width: 280px;
+  opacity:0;
+  animation: fadeUp 0.8s ease forwards 1s;
+}
+
+.hero-right {
+  padding: 140px 40px 60px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+}
+
+.hero-coords {
+  opacity:0;
+  animation: fadeUp 0.8s ease forwards 1.2s;
+}
+
+.coord-line {
+  display:flex; justify-content:space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ivory-3);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+}
+.coord-line:first-child { border-top: 1px solid var(--ivory-3); }
+.coord-k { color: var(--ink-3); text-transform:uppercase; }
+.coord-v { font-family:'Cormorant Garamond', serif; font-style:italic; font-size:13px; color:var(--ink-2); }
+
+/* ── SCROLL INDICATOR ── */
+.scroll-hint {
+  position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  opacity:0;
+  animation: fadeIn 1s ease forwards 1.8s;
+}
+.scroll-line {
+  width:1px; height:48px;
+  background: linear-gradient(to bottom, var(--ink), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+.scroll-label {
+  font-size:8px; letter-spacing:0.25em; text-transform:uppercase; color:var(--ink-3);
+}
+
+@keyframes scrollLine {
+  0%,100% { opacity:1; transform:scaleY(1); transform-origin:top; }
+  50% { opacity:0.3; }
+}
+
+/* ── WORK ── */
+#work { padding-top: 1px; }
+
+.work-intro {
+  display:flex; justify-content:space-between; align-items:flex-end;
+  padding: 48px 40px 32px;
+  border-top: 1px solid var(--ivory-3);
+}
+
+.work-label {
+  font-size: 9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--ink-3);
+}
+
+.work-statement {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px; font-style:italic; color:var(--ink-2);
+}
+
+/* Project rows — alternating layout */
+.projects { display:flex; flex-direction:column; }
+
+.proj {
+  display:grid;
+  border-top: 1px solid var(--ivory-3);
+  position:relative;
+  overflow:hidden;
+  transition: background 0.5s ease;
+}
+
+.proj:hover { background: var(--ivory-2); }
+
+.proj:last-child { border-bottom: 1px solid var(--ivory-3); }
+
+/* Wide left */
+.proj.layout-a { grid-template-columns: 3fr 2fr; }
+/* Wide right */
+.proj.layout-b { grid-template-columns: 2fr 3fr; }
+/* Full bleed with overlay */
+.proj.layout-c { grid-template-columns: 1fr; }
+
+.proj-img {
+  aspect-ratio: 16/9;
+  background: var(--ivory-2);
+  position:relative;
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.proj-img::before {
+  content:'';
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent, transparent 18px,
+    rgba(12,12,10,0.03) 18px, rgba(12,12,10,0.03) 19px
+  );
+}
+
+.proj-img-label {
+  font-size: 9px; letter-spacing:0.2em; text-transform:uppercase;
+  color: var(--ink-3); position:relative; z-index:1;
+}
+
+.proj-body {
+  padding: 48px 40px;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+
+.proj-n {
+  font-size: 9px; letter-spacing:0.2em; color:var(--ink-3);
+  margin-bottom: 24px;
+}
+
+.proj-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 3vw, 42px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+}
+
+.proj-title em {
+  font-style:italic; font-weight:400; color:var(--ink-2);
+}
+
+.proj-desc {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; font-style:italic;
+  color:var(--ink-3); line-height:1.55;
+  max-width: 320px;
+  margin-bottom: 32px;
+}
+
+.proj-tags {
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+
+.proj-tag {
+  font-size: 8px; letter-spacing:0.2em; text-transform:uppercase;
+  padding: 5px 10px; border: 1px solid var(--ivory-3);
+  color: var(--ink-3);
+}
+
+/* layout-c: full bleed */
+.proj.layout-c .proj-img {
+  aspect-ratio: 21/9;
+  width:100%;
+}
+.proj.layout-c .proj-body {
+  flex-direction:row; align-items:flex-end;
+  padding: 32px 40px;
+  border-top: 1px solid var(--ivory-3);
+}
+.proj.layout-c .proj-meta { flex:1; }
+.proj.layout-c .proj-tags { flex-direction:column; align-items:flex-end; }
+
+/* ── INTERLUDE ── */
+.interlude {
+  padding: 80px 40px;
+  border-top: 1px solid var(--ivory-3);
+  display:grid; grid-template-columns: 1fr 2fr 1fr;
+  align-items:center; gap:40px;
+}
+
+.interlude-mark {
+  width:1px; height:80px; background:var(--gold);
+  justify-self:center;
+}
+
+.interlude-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-weight: 400;
+  line-height: 1.4;
+  text-align:center;
+  color: var(--ink-2);
+}
+
+.interlude-text em { font-style:italic; color:var(--ink-3); }
+
+/* ── ABOUT ── */
+#about {
+  border-top: 1px solid var(--ivory-3);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 60vh;
+}
+
+.about-l {
+  padding: 80px 40px;
+  border-right: 1px solid var(--ivory-3);
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+
+.about-label {
+  font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--ink-3);
+}
+
+.about-bio {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 2.5vw, 32px);
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.about-bio em { font-style:italic; color:var(--ink-3); }
+
+.about-skills {
+  display:flex; flex-direction:column;
+}
+
+.skill-row {
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--ivory-3);
+  font-size: 10px;
+}
+.skill-row:first-child { border-top: 1px solid var(--ivory-3); }
+.skill-name { text-transform:uppercase; letter-spacing:0.15em; }
+.skill-note { font-family:'Cormorant Garamond', serif; font-style:italic; font-size:13px; color:var(--ink-3); }
+
+.about-r {
+  padding: 80px 40px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+}
+
+.about-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(17px, 2vw, 22px);
+  font-style:italic;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.about-quote::before {
+  content:'"';
+  display:block;
+  font-size: 64px; line-height:1;
+  color: var(--ivory-3);
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 8px;
+}
+
+/* ── CONTACT ── */
+#contact {
+  border-top: 1px solid var(--ivory-3);
+}
+
+.contact-big {
+  padding: 80px 40px 40px;
+  display:grid; grid-template-columns: 1fr 1fr; gap:0;
+}
+
+.contact-l {
+  border-right: 1px solid var(--ivory-3);
+  padding-right: 60px;
+  display:flex; flex-direction:column; gap:40px;
+}
+
+.contact-label {
+  font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--ink-3);
+}
+
+.contact-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(40px, 5.5vw, 72px);
+  font-weight:900;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+}
+
+.contact-heading em {
+  font-style:italic; font-weight:400; display:block; color:var(--ink-2);
+}
+
+.contact-cta {
+  display:inline-flex; align-items:center; gap:16px;
+  padding: 16px 32px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing:0.2em; text-transform:uppercase;
+  text-decoration:none;
+  transition: all 0.25s;
+  align-self:flex-start;
+}
+.contact-cta:hover { background:transparent; color:var(--ink); }
+
+.contact-r {
+  padding-left: 60px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+}
+
+.contact-note {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-style:italic;
+  color: var(--ink-3);
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--ivory-3);
+  padding: 20px 40px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+.footer-copy { font-size:9px; color:var(--ink-3); letter-spacing:0.1em; }
+.footer-sig {
+  font-family:'Playfair Display', serif;
+  font-size:12px; font-weight:900; letter-spacing:0.2em;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.reveal {
+  opacity:0; transform:translateY(28px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.on { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">KSRC</div>
+  <div class="nav-r">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text">KSRC</div>
+
+  <div class="hero-content">
+    <div class="hero-left">
+      <span class="hero-eyebrow">Creative Studio — Taiwan</span>
+      <h1 class="hero-headline">
+        Making<br>
+        <em>things</em><br>
+        matter.
+      </h1>
+      <p class="hero-sub">Brand identity and visual systems for people who refuse to be ordinary.</p>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-coords">
+        <div class="coord-line">
+          <span class="coord-k">Discipline</span>
+          <span class="coord-v">Brand · Editorial · Web</span>
+        </div>
+        <div class="coord-line">
+          <span class="coord-k">Language</span>
+          <span class="coord-v">Swiss Grid · Type-led</span>
+        </div>
+        <div class="coord-line">
+          <span class="coord-k">Base</span>
+          <span class="coord-v">Taichung, Taiwan</span>
+        </div>
+        <div class="coord-line">
+          <span class="coord-k">Status</span>
+          <span class="coord-v">Open — 2025</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+  <div class="work-intro reveal">
+    <span class="work-label">Selected Work</span>
+    <span class="work-statement">Six projects. Different contexts. One standard.</span>
+  </div>
+
+  <div class="projects">
+
+    <!-- 01 — layout A: image left -->
+    <div class="proj layout-a reveal">
+      <div class="proj-img">
+        <span class="proj-img-label">Project Image</span>
+      </div>
+      <div class="proj-body">
+        <div>
+          <div class="proj-n">01 — 2025</div>
+          <h2 class="proj-title">Wellness Brand<br><em>Identity System</em></h2>
+          <p class="proj-desc">Complete visual identity — from first mark to final guideline. Built to outlast trends.</p>
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">Brand Identity</span>
+          <span class="proj-tag">Visual System</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 — layout B: body left, image right -->
+    <div class="proj layout-b reveal">
+      <div class="proj-body">
+        <div>
+          <div class="proj-n">02 — 2025</div>
+          <h2 class="proj-title">Editorial<br><em>Campaign</em></h2>
+          <p class="proj-desc">Art direction for an Instagram editorial series. Cinematic tension, zero decoration.</p>
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">Editorial</span>
+          <span class="proj-tag">Art Direction</span>
+        </div>
+      </div>
+      <div class="proj-img">
+        <span class="proj-img-label">Project Image</span>
+      </div>
+    </div>
+
+    <!-- 03 — layout C: full bleed -->
+    <div class="proj layout-c reveal">
+      <div class="proj-img">
+        <span class="proj-img-label">Project Image</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-meta">
+          <div class="proj-n">03 — 2024</div>
+          <h2 class="proj-title">KŌDO — <em>Coffee</em></h2>
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">Brand</span>
+          <span class="proj-tag">Web</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 — layout A -->
+    <div class="proj layout-a reveal">
+      <div class="proj-img">
+        <span class="proj-img-label">Project Image</span>
+      </div>
+      <div class="proj-body">
+        <div>
+          <div class="proj-n">04 — 2024</div>
+          <h2 class="proj-title">Podcast<br><em>Universe</em></h2>
+          <p class="proj-desc">Identity, script architecture, visual language. A show built from the inside out.</p>
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">Podcast</span>
+          <span class="proj-tag">Content</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 — layout B -->
+    <div class="proj layout-b reveal">
+      <div class="proj-body">
+        <div>
+          <div class="proj-n">05 — 2024</div>
+          <h2 class="proj-title">ADHD<br><em>Daily App</em></h2>
+          <p class="proj-desc">A tool for focus built with restraint — calm, gamified, and genuinely useful.</p>
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">App Design</span>
+          <span class="proj-tag">UI/UX</span>
+        </div>
+      </div>
+      <div class="proj-img">
+        <span class="proj-img-label">Project Image</span>
+      </div>
+    </div>
+
+    <!-- 06 — layout A -->
+    <div class="proj layout-a reveal">
+      <div class="proj-img">
+        <span class="proj-img-label">Project Image</span>
+      </div>
+      <div class="proj-body">
+        <div>
+          <div class="proj-n">06 — 2024</div>
+          <h2 class="proj-title">Skincare<br><em>Content Strategy</em></h2>
+          <p class="proj-desc">Structure as aesthetic. SEO architecture that reads like editorial writing.</p>
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">SEO</span>
+          <span class="proj-tag">Content Strategy</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- INTERLUDE -->
+<div class="interlude reveal">
+  <div class="interlude-mark"></div>
+  <p class="interlude-text">
+    The work that interests me is the kind<br>
+    that <em>cannot be explained in a brief</em> —<br>
+    only felt when it's finished.
+  </p>
+  <div class="interlude-mark"></div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-l reveal">
+    <span class="about-label">The Studio</span>
+
+    <p class="about-bio">
+      A one-person studio<br>
+      in Taichung, Taiwan —<br>
+      making <em>precise,<br>
+      peculiar</em> things.
+    </p>
+
+    <div class="about-skills">
+      <div class="skill-row">
+        <span class="skill-name">Brand Identity</span>
+        <span class="skill-note">mark, system, language</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Editorial Design</span>
+        <span class="skill-note">print, digital, campaign</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Content Strategy</span>
+        <span class="skill-note">SEO, narrative, structure</span>
+      </div>
+      <div class="skill-row">
+        <span class="skill-name">Web Development</span>
+        <span class="skill-note">pages, systems, detail</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-r reveal">
+    <p class="about-quote">
+      I work best with people who have a strong point of view and the courage to follow it — even when the brief says otherwise.
+    </p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-big">
+    <div class="contact-l reveal">
+      <span class="contact-label">New Project</span>
+      <h2 class="contact-heading">
+        Got<br>
+        something<br>
+        <em>interesting?</em>
+      </h2>
+      <a href="https://forms.gle/yourformlink" target="_blank" rel="noopener" class="contact-cta">
+        Get in Touch →
+      </a>
+    </div>
+
+    <div class="contact-r reveal">
+      <p class="contact-note">
+        I take on a small number of projects each season — the kind where the answer isn't obvious and the result can't be predicted from the brief.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 KSRC. All rights reserved.</span>
+  <span class="footer-sig">KSRC</span>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, .proj').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('big'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+  });
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('on'), i * 60);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Protection
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+  document.addEventListener('keydown', e => {
+    if (
+      (e.ctrlKey && ['s','u','p','i','j'].includes(e.key.toLowerCase())) ||
+      (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) ||
+      e.key === 'F12'
+    ) e.preventDefault();
+  });
+</script>
+</body>
+</html>
