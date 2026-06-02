@@ -259,6 +259,15 @@ nav {
   display:flex; align-items:center; justify-content:center;
 }
 
+.proj-img img {
+  width:100%; height:100%;
+  object-fit: cover;
+  display:block;
+  transition: transform 0.6s ease;
+}
+
+.proj:hover .proj-img img { transform: scale(1.03); }
+
 .proj-img::before {
   content:'';
   position:absolute; inset:0;
@@ -269,11 +278,19 @@ nav {
   );
 }
 
-.proj-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .proj-img-label {
   font-size: 9px; letter-spacing:0.2em; text-transform:uppercase;
   color: var(--ink-3); position:relative; z-index:1;
 }
+
+.proj-img img {
+  width:100%; height:100%;
+  object-fit:cover; object-position:center top;
+  display:block;
+  transition: transform 0.6s ease;
+}
+
+.proj:hover .proj-img img { transform: scale(1.03); }
 
 .proj-body {
   padding: 48px 40px;
@@ -320,6 +337,9 @@ nav {
 .proj.layout-c .proj-img {
   aspect-ratio: 21/9;
   width:100%;
+}
+.proj.layout-c .proj-img img {
+  width:100%; height:100%; object-fit:cover;
 }
 .proj.layout-c .proj-body {
   flex-direction:row; align-items:flex-end;
@@ -526,7 +546,7 @@ footer {
 
   <div class="hero-content">
     <div class="hero-left">
-      <span class="hero-eyebrow">Creative Studio</span>
+      <span class="hero-eyebrow">Creative Studio — Taiwan</span>
       <h1 class="hero-headline">
         Making<br>
         <em>things</em><br>
@@ -547,7 +567,7 @@ footer {
         </div>
         <div class="coord-line">
           <span class="coord-k">Base</span>
-          <span class="coord-v">Independent Practice</span>
+          <span class="coord-v">Taichung, Taiwan</span>
         </div>
         <div class="coord-line">
           <span class="coord-k">Status</span>
@@ -575,7 +595,7 @@ footer {
     <!-- 01 — layout A: image left -->
     <div class="proj layout-a reveal">
       <div class="proj-img">
-        <img src="images/47658571-3CED-475F-B091-B24E11A421E9.jpeg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="images/390E9016-492A-41F7-9780-9284851836D3.jpeg" alt="KSRC Identity System">
       </div>
       <div class="proj-body">
         <div>
@@ -604,14 +624,14 @@ footer {
         </div>
       </div>
       <div class="proj-img">
-        <img src="images/C8345F23-B58B-4A16-B049-E2A26720AAC9.jpeg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="images/D52C753E-9F5B-4702-8AE6-8794CD177D34.jpeg" alt="KSRC Editorial Campaign">
       </div>
     </div>
 
     <!-- 03 — layout C: full bleed -->
     <div class="proj layout-c reveal">
       <div class="proj-img">
-        <img src="images/1600E592-DA65-44BC-9F43-0AC0C2EFD08B.jpeg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="images/47658571-3CED-475F-B091-B24E11A421E9.jpeg" alt="KSRC Visual System">
       </div>
       <div class="proj-body">
         <div class="proj-meta">
@@ -628,7 +648,7 @@ footer {
     <!-- 04 — layout A -->
     <div class="proj layout-a reveal">
       <div class="proj-img">
-        <img src="images/D5500821-8295-47EC-A31B-F8D389855422.jpeg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="images/B3DF94EF-F5AA-4234-B8C7-7241508152FC.jpeg" alt="KSRC Archive Visual Direction">
       </div>
       <div class="proj-body">
         <div>
@@ -657,14 +677,14 @@ footer {
         </div>
       </div>
       <div class="proj-img">
-        <img src="images/D52C753E-9F5B-4702-8AE6-8794CD177D34.jpeg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="images/C8345F23-B58B-4A16-B049-E2A26720AAC9.jpeg" alt="KSRC Website Direction">
       </div>
     </div>
 
     <!-- 06 — layout A -->
     <div class="proj layout-a reveal">
       <div class="proj-img">
-        <img src="images/E3F8585F-F029-4A8B-99DB-C9915C882E13.jpeg" style="width:100%;height:100%;object-fit:cover;">
+        <img src="images/24830E16-0CBD-4B33-BB62-A414FB54C727.jpeg" alt="KSRC Material Studies">
       </div>
       <div class="proj-body">
         <div>
@@ -700,7 +720,7 @@ footer {
 
     <p class="about-bio">
       A one-person studio<br>
-      in Independent Practice —<br>
+      in Taichung, Taiwan —<br>
       making <em>precise,<br>
       peculiar</em> things.
     </p>
@@ -727,8 +747,7 @@ footer {
 
   <div class="about-r reveal">
     <p class="about-quote">
-      Thoughtful systems.<br>
-      Unexpected results.
+      I work best with people who have a strong point of view and the courage to follow it — even when the brief says otherwise.
     </p>
   </div>
 </section>
